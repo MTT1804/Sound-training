@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="dzwiek">
+        <item>2x1 tryb tekstowy</item>
+        <item>2x2 tryb tekstowy</item>
+        <item>3x3 tryb tekstowy</item>
+        <item>2x1 tryb obrazkowy</item>
+        <item>2x2 tryb obrazkowy</item>
+        <item>3x3 tryb obrazkowy</item>
+        <item>3x3 tryb wpisywanie</item>
+    </array>
+</resources>
