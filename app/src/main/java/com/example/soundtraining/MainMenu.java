@@ -73,9 +73,51 @@ public class MainMenu extends Fragment {
                 builder.setItems(R.array.dzwiek, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Sound module;
+                        FragmentManager fm;
+                        FragmentTransaction ft;
                         switch (which) {
                             case 0:
-                                sound module = new sound();
+                                module = new Sound(2,1);
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 1:
+                                module = new Sound(2,2);
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 2:
+                                module = new Sound(3,3);
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                        }
+                    }
+                });
+                builder.create().show();
+            }
+        });
+        mainView.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Wybierz ćwiczenie z listy");
+                builder.setItems(R.array.mowa, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                Sound module = new Sound(2,1);
                                 FragmentManager fm = getActivity().getSupportFragmentManager();
                                 FragmentTransaction ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
