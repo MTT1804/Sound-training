@@ -28,12 +28,12 @@
 
     <LinearLayout
         android:id="@+id/infoAndButtonBottomPanel"
-        android:layout_width="811dp"
+        android:layout_width="772dp"
         android:layout_height="70dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
-        android:layout_marginBottom="-16dp"
+        android:layout_marginBottom="-5dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,28 +42,36 @@
 
         <TextView
             android:id="@+id/currentInformations"
-            android:layout_width="1300dp"
+            android:layout_width="1200dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in faucibus neque, eget faucibus sapien. Nullam vel lectus tincidunt, congue nulla ut, tincidunt risus. Aliquam venenatis elit felis, quis laoreet odio feugiat nec. Etiam aliquet condimentum tempus. Aenean tincidunt ut leo eu volutpat. Sed eget porttitor eros. Quisque interdum lorem sed justo laoreet, sed lobortis neque vehicula." />
 
         <ImageButton
             android:id="@+id/play"
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/play" />
 
         <ImageButton
             android:id="@+id/stop"
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/stop" />
+        <ImageButton
+            android:id="@+id/stop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/movenext" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
