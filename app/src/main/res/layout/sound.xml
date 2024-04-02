@@ -65,7 +65,7 @@
             android:scaleType="fitXY"
             app:srcCompat="@drawable/stop" />
         <ImageButton
-            android:id="@+id/stop"
+            android:id="@+id/next"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

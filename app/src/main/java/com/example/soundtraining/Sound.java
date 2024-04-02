@@ -1,62 +1,38 @@
 package com.example.soundtraining;
 
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
-import androidx.gridlayout.widget.GridLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Random;
 
-public class Sound extends Fragment {
-    private View mainView;
-    private String [] soundNames;
-    private Integer [] choices;
-    private int m, n;
+public class Sound extends Excercise {
     public Sound(int m, int n) {
         super(R.layout.sound);
         this.m = m;
         this.n = n;
+        this.mode = programMode.BEFORE_PLAY;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.sound, container, false);
+        this.assetManager = mainView.getContext().getAssets();
+        currentInformations = mainView.findViewById(R.id.currentInformations);
+        messageSystem = new UserMessages(currentInformations);
         searchForSoundsAndGetSoundsNames();
         insertAParticularNumberOfButtonsIntoGridLayout(m,n);
+        setButtonsClickedBehaviour(m*n);
         return mainView;
-    }
-
-    public void generateAndInsertRandomlyChosenSounds(int fieldAmount) {
-        choices = generateRandomChoices(fieldAmount);
-        for (int buttonCounter = 0; buttonCounter < fieldAmount; buttonCounter++) {
-            int buttonId = getResources().getIdentifier("button_" + buttonCounter, "id", mainView.getContext().getPackageName());
-            ((Button)mainView.findViewById(buttonId)).setText(soundNames[choices[buttonCounter]]);
-        }
-    }
-
-    public Integer [] generateRandomChoices(int fieldAmount){
-        Random r = new Random();
-        HashSet<Integer>numbers = new HashSet<>();
-
-        while (fieldAmount != numbers.size()) {
-            for (int i = 0; i < soundNames.length; i++){
-                numbers.add(r.nextInt(fieldAmount));
-            }
-        }
-        return numbers.toArray(new Integer[numbers.size()]);
     }
     public void searchForSoundsAndGetSoundsNames(){
         AssetManager assetManager = mainView.getContext().getAssets();
@@ -70,38 +46,35 @@ public class Sound extends Fragment {
         }
 
     }
+    @Override
+    protected void playSound(String sound){
+        Log.i("GRAM",sound);
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
 
-    public void insertAParticularNumberOfButtonsIntoGridLayout(int m, int n) {
-        final GridLayout buttonsMatrix = mainView.findViewById(R.id.buttonsMatrix);
-        buttonsMatrix.setColumnCount(n);
-        buttonsMatrix.setRowCount(m);
-        buttonsMatrix.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int buttonWidth = buttonsMatrix.getWidth() / n;
-                int buttonHeight = buttonsMatrix.getHeight() / m;
-                int buttonCounter = 0;
-                for (int i = 0; i < m; i++) {
-                    for (int j = 0; j < n; j++) {
-                        Button button = new Button(mainView.getContext());
-                        int buttonId = getResources().getIdentifier("button_" + buttonCounter, "id", mainView.getContext().getPackageName());
-                        button.setId(buttonId);
-                        button.setText("Przycisk " + ((i * n) + j + 1));
-                        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                        params.width = buttonWidth;
-                        params.height = buttonHeight;
-                        params.setMargins(2, 2, 2, 2);
-                        params.setGravity(Gravity.FILL);
-                        button.setLayoutParams(params);
-                        buttonsMatrix.addView(button);
-                        buttonCounter++;
-                    }
-                }
-                generateAndInsertRandomlyChosenSounds(m*n);
-                buttonsMatrix.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
+        mediaPlayer = new MediaPlayer();
+
+        try {
+            AssetFileDescriptor descriptor = assetManager.openFd(sound);
+            mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
+    @Override
+    protected void stopSound() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
 
 }
