@@ -32,6 +32,7 @@ public class Sound extends Excercise {
         searchForSoundsAndGetSoundsNames();
         insertAParticularNumberOfButtonsIntoGridLayout(m,n);
         setButtonsClickedBehaviour(m*n);
+        setDefaultColorsOfButtons();
         return mainView;
     }
     public void searchForSoundsAndGetSoundsNames(){

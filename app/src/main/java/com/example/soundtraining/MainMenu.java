@@ -9,15 +9,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +33,7 @@ public class MainMenu extends Fragment {
     }
 
     View mainView;
+    NavigationView navigationView;
 
     public void loadAndSetBackgoundButtonsImages() {
         AssetManager manager = mainView.getContext().getAssets();
@@ -65,6 +71,8 @@ public class MainMenu extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.main_menu, container, false);
         loadAndSetBackgoundButtonsImages();
+        setBackPanel();
+        setRightPanelButton();
         mainView.findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,6 +141,34 @@ public class MainMenu extends Fragment {
             }
         });
         return mainView;
+    }
+    void setBackPanel(){
+        navigationView = mainView.findViewById(R.id.nav_view);
+        navigationView.inflateMenu(R.menu.drawer_menu);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // Obsługa wybranego elementu menu
+                switch (item.getItemId()) {
+                    /*case R.id.nav_item_1:
+                        break;
+                    case R.id.nav_item_2:
+                        break;
+                    // Obsłuż inne opcje menu*/
+                }
+                return true;
+            }
+        });
+    }
+    void setRightPanelButton(){
+        Button openNavButton = mainView.findViewById(R.id.buttonRightPanel);
+        openNavButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawerLayout = mainView.findViewById(R.id.drawer_layout);
+                drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
     }
 
 

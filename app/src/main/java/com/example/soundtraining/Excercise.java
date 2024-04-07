@@ -2,6 +2,7 @@ package com.example.soundtraining;
 
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -21,39 +22,53 @@ public abstract class Excercise extends Fragment {
         super(layout);
     }
 
-    protected View mainView;
-    protected String[] soundNames;
-    protected Integer[] choices;
-    protected int m, n;
-    protected GridLayout buttonsMatrix;
-    protected TextView currentInformations;
-    protected UserMessages messageSystem;
+    View mainView;
+    String[] soundNames;
+    Integer[] choices;
+    int m, n;
+    GridLayout buttonsMatrix;
+    TextView currentInformations;
+    UserMessages messageSystem;
 
-    protected enum programMode {
+    enum programMode {
         BEFORE_PLAY, PLAYING, STOPPED, ANSWERED
     }
 
-    protected programMode mode;
-    protected int correctAnswer;
-    protected int userAnswer;
-    protected int buttonCounter;
-    protected int buttonId;
-    protected MediaPlayer mediaPlayer;
-    protected AssetManager assetManager;
+    programMode mode;
+    int correctAnswer;
+    int userAnswer;
+    int buttonCounter, buttonCounter2;
+    int buttonId;
+    MediaPlayer mediaPlayer;
+    AssetManager assetManager;
+    boolean deactivateAllButtons = false;
 
-    protected abstract void playSound(String sound);
+    abstract void playSound(String sound);
 
-    protected abstract void stopSound();
+    abstract void stopSound();
 
-    protected void generateAndInsertRandomlyChosenSounds(int fieldAmount) {
+    void setDefaultColorsOfButtons() {
+        buttonsMatrix.post(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < buttonsMatrix.getChildCount(); i++) {
+                    Button buttonChosen = (Button) buttonsMatrix.getChildAt(i);
+                    buttonChosen.setBackgroundResource(android.R.drawable.btn_default);
+                }
+            }
+        });
+    }
+
+    void generateAndInsertRandomlyChosenSounds(int fieldAmount) {
         choices = generateRandomChoices(fieldAmount);
+        generateACorrectAnswer(fieldAmount);
         for (int buttonCounter = 0; buttonCounter < fieldAmount; buttonCounter++) {
             int buttonId = getResources().getIdentifier("button_" + buttonCounter, "id", mainView.getContext().getPackageName());
             ((Button) mainView.findViewById(buttonId)).setText(soundNames[choices[buttonCounter]]);
         }
     }
 
-    protected Integer[] generateRandomChoices(int fieldAmount) {
+    Integer[] generateRandomChoices(int fieldAmount) {
         Random r = new Random();
         HashSet<Integer> numbers = new HashSet<>();
 
@@ -65,7 +80,7 @@ public abstract class Excercise extends Fragment {
         return numbers.toArray(new Integer[numbers.size()]);
     }
 
-    protected void insertAParticularNumberOfButtonsIntoGridLayout(int m, int n) {
+    void insertAParticularNumberOfButtonsIntoGridLayout(int m, int n) {
         buttonsMatrix = mainView.findViewById(R.id.buttonsMatrix);
         buttonsMatrix.setColumnCount(n);
         buttonsMatrix.setRowCount(m);
@@ -105,7 +120,7 @@ public abstract class Excercise extends Fragment {
         });
     }
 
-    protected void setButtonsClickedBehaviour(int fieldAmount) {
+    void setButtonsClickedBehaviour(int fieldAmount) {
         ((ImageButton) mainView.findViewById(R.id.play)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,26 +137,50 @@ public abstract class Excercise extends Fragment {
                 stopSound();
             }
         });
+        ((ImageButton) mainView.findViewById(R.id.next)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation animation = AnimationUtils.loadAnimation(mainView.getContext(), R.anim.button_pressed_animation);
+                ((ImageButton) mainView.findViewById(R.id.next)).startAnimation(animation);
+                stopSound();
+                buttonsMatrix.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setDefaultColorsOfButtons();
+                        generateAndInsertRandomlyChosenSounds(m * n);
+                        deactivateAllButtons = false;
+                        messageSystem.pressAButtonToPlayASound();
+                    }
+                });
+
+
+            }
+        });
         buttonsMatrix.post(new Runnable() {
 
             @Override
             public void run() {
-                for (buttonCounter = 0; buttonCounter < fieldAmount; buttonCounter++) {
-                    buttonId = getResources().getIdentifier("button_" + buttonCounter, "id", mainView.getContext().getPackageName());
-                    ((Button) mainView.findViewById(buttonId)).setOnClickListener(new View.OnClickListener() {
+                for (buttonCounter = 0; buttonCounter < buttonsMatrix.getChildCount(); buttonCounter++) {
+                    final int currentButtonIndex = buttonCounter;
+                    Button buttonChosen = (Button) buttonsMatrix.getChildAt(buttonCounter);
+                    buttonChosen.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            userAnswer = buttonCounter;
-                            mode = programMode.ANSWERED;
-                            if (checkUserAnswer()) {
-                                ((Button) mainView.findViewById(buttonId)).setBackgroundResource(R.color.green);
-                                messageSystem.points += 10;
-                                messageSystem.correctAnswer();
-                            } else {
-                                ((Button) mainView.findViewById(buttonId)).setBackgroundResource(R.color.red);
-                                buttonId = getResources().getIdentifier("button_" + correctAnswer, "id", mainView.getContext().getPackageName());
-                                ((Button) mainView.findViewById(buttonId)).setBackgroundResource(R.color.green);
-                                messageSystem.incorrectAnswer(soundNames[choices[correctAnswer]]);
+                            if (!deactivateAllButtons) {
+                                deactivateAllButtons = true;
+                                userAnswer = currentButtonIndex;
+                                Log.i("USERANSWER", userAnswer +"");
+                                Log.i("CORRECTANSWER", correctAnswer +"");
+                                mode = programMode.ANSWERED;
+                                if (checkUserAnswer()) {
+                                    buttonChosen.setBackgroundResource(R.color.green);
+                                    messageSystem.correctAnswer();
+                                } else {
+                                    buttonChosen.setBackgroundResource(R.color.red);
+                                    Button buttonCorrect = (Button) buttonsMatrix.getChildAt(correctAnswer);
+                                    buttonCorrect.setBackgroundResource(R.color.green);
+                                    messageSystem.incorrectAnswer(soundNames[choices[correctAnswer]]);
+                                }
                             }
                         }
                     });
@@ -151,19 +190,19 @@ public abstract class Excercise extends Fragment {
 
     }
 
-    protected void lockButtons() {
+    void lockButtons() {
 
     }
 
-    protected void unlockButtons() {
+    void unlockButtons() {
 
     }
 
-    protected boolean checkUserAnswer() {
+    boolean checkUserAnswer() {
         return userAnswer == correctAnswer;
     }
 
-    protected void generateACorrectAnswer(int fieldAmount) {
+    void generateACorrectAnswer(int fieldAmount) {
         Random r = new Random();
         correctAnswer = r.nextInt(fieldAmount);
     }
