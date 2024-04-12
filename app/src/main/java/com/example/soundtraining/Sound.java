@@ -19,8 +19,8 @@ public class Sound extends Excercise {
         super(R.layout.sound);
         this.m = m;
         this.n = n;
-        this.mode = programMode.BEFORE_PLAY;
     }
+
 
     @Nullable
     @Override
@@ -30,9 +30,18 @@ public class Sound extends Excercise {
         currentInformations = mainView.findViewById(R.id.currentInformations);
         messageSystem = new UserMessages(currentInformations);
         searchForSoundsAndGetSoundsNames();
-        insertAParticularNumberOfButtonsIntoGridLayout(m,n);
-        setButtonsClickedBehaviour(m*n);
-        setDefaultColorsOfButtons();
+        if (MainMenu.mode != MainMenu.ProgramMode.INPUT) {
+            insertAParticularNumberOfButtonsIntoGridLayout(m, n);
+            setButtonsClickedBehaviour(m * n);
+            setDefaultColorsOfButtons();
+        } else {
+            addTextViewAndEditTextToGridLayout();
+            messageSystem.pressAButtonAndInputText();
+            setButtonsClickedBehaviour(0);
+            setAnswerChecker();
+            generateACorrectAnswer(soundNames.length);
+            Log.i("CORRECT_ANSWER",soundNames[correctAnswer]);
+        }
         return mainView;
     }
     public void searchForSoundsAndGetSoundsNames(){

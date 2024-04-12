@@ -10,4 +10,6 @@
     <item type="id" name="button_7"/>
     <item type="id" name="button_8"/>
     <item type="id" name="button_9"/>
+    <item type="id" name="inputTextFieldInfo"/>
+    <item type="id" name="inputTextField"/>
 </resources>

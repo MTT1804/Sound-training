@@ -45,7 +45,7 @@
             android:layout_width="1200dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in faucibus neque, eget faucibus sapien. Nullam vel lectus tincidunt, congue nulla ut, tincidunt risus. Aliquam venenatis elit felis, quis laoreet odio feugiat nec. Etiam aliquet condimentum tempus. Aenean tincidunt ut leo eu volutpat. Sed eget porttitor eros. Quisque interdum lorem sed justo laoreet, sed lobortis neque vehicula." />
+            android:text="Naciśnij zielony przycisk aby odtworzyć dźwięk."/>
 
         <ImageButton
             android:id="@+id/play"
