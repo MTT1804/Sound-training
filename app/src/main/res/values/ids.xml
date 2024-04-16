@@ -12,4 +12,5 @@
     <item type="id" name="button_9"/>
     <item type="id" name="inputTextFieldInfo"/>
     <item type="id" name="inputTextField"/>
+    <item type="id" name="inputTextFieldSynthesizer"/>
 </resources>

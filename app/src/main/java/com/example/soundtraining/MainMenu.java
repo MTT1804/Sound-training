@@ -35,9 +35,13 @@ public class MainMenu extends Fragment {
     View mainView;
     NavigationView navigationView;
     static enum ProgramMode{
-        TEXT, IMAGES, INPUT
+        TEXT, IMAGES, INPUT, SPEECH_SYNTHESIZER
+    }
+    static enum ExcerciseMode{
+        SOUND, SPEECH, FREQUENCY
     }
     static ProgramMode mode;
+    static ExcerciseMode emode;
 
     public void loadAndSetBackgoundButtonsImages() {
         AssetManager manager = mainView.getContext().getAssets();
@@ -92,6 +96,7 @@ public class MainMenu extends Fragment {
                             case 0:
                                 module = new Sound(2,1);
                                 mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -101,6 +106,7 @@ public class MainMenu extends Fragment {
                             case 1:
                                 module = new Sound(2,2);
                                 mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -110,6 +116,7 @@ public class MainMenu extends Fragment {
                             case 2:
                                 module = new Sound(3,3);
                                 mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -119,6 +126,7 @@ public class MainMenu extends Fragment {
                             case 3:
                                 module = new Sound(2,1);
                                 mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -128,6 +136,7 @@ public class MainMenu extends Fragment {
                             case 4:
                                 module = new Sound(2,2);
                                 mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -137,6 +146,7 @@ public class MainMenu extends Fragment {
                             case 5:
                                 module = new Sound(3,3);
                                 mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -146,6 +156,7 @@ public class MainMenu extends Fragment {
                             case 6:
                                 module = new Sound(-1,-1);
                                 mode = ProgramMode.INPUT;
+                                emode = ExcerciseMode.SOUND;
                                 fm = getActivity().getSupportFragmentManager();
                                 ft = fm.beginTransaction();
                                 ft.replace(R.id.fragmentContainerView, module);
@@ -166,16 +177,89 @@ public class MainMenu extends Fragment {
                 builder.setItems(R.array.mowa, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Speech moduleSpeech;
+                        FragmentManager fm;
+                        FragmentTransaction ft;
                         switch (which) {
                             case 0:
-                                Sound module = new Sound(2,1);
-                                FragmentManager fm = getActivity().getSupportFragmentManager();
-                                FragmentTransaction ft = fm.beginTransaction();
-                                ft.replace(R.id.fragmentContainerView, module);
+                                moduleSpeech = new Speech(2,1);
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
                                 ft.addToBackStack(null);
                                 ft.commit();
                                 break;
                             case 1:
+                                moduleSpeech = new Speech(2,2);
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 2:
+                                moduleSpeech = new Speech(3,3);
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 3:
+                                moduleSpeech = new Speech(2,1);
+                                mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 4:
+                                moduleSpeech = new Speech(2,2);
+                                mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 5:
+                                moduleSpeech = new Speech(3,3);
+                                mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 6:
+                                moduleSpeech = new Speech(3,3);
+                                mode = ProgramMode.INPUT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 7:
+                                moduleSpeech = new Speech(-1,-1);
+                                mode = ProgramMode.SPEECH_SYNTHESIZER;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
                                 break;
                         }
                     }

@@ -48,10 +48,12 @@ public abstract class Excercise extends Fragment {
     boolean deactivateAllButtons = false;
     EditText editText;
     boolean lockPoints = false;
+    List<Integer> numbers;
 
     abstract void playSound(String sound);
 
     abstract void stopSound();
+
     void addTextViewAndEditTextToGridLayout() {
         buttonsMatrix = mainView.findViewById(R.id.buttonsMatrix);
         buttonsMatrix.post(new Runnable() {
@@ -90,7 +92,8 @@ public abstract class Excercise extends Fragment {
         });
 
     }
-    void setAnswerChecker(){
+
+    void setAnswerChecker() {
         buttonsMatrix.post(new Runnable() {
             @Override
             public void run() {
@@ -102,8 +105,8 @@ public abstract class Excercise extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if(checkUserAnswerString(s.toString())){
-                            if(!lockPoints) {
+                        if (checkUserAnswerString(s.toString())) {
+                            if (!lockPoints) {
                                 messageSystem.correctAnswer();
                                 lockPoints = true;
                             } else {
@@ -125,7 +128,7 @@ public abstract class Excercise extends Fragment {
     }
 
     void setDefaultColorsOfButtons() {
-        if(MainMenu.mode == MainMenu.ProgramMode.TEXT) {
+        if (MainMenu.mode == MainMenu.ProgramMode.TEXT) {
             buttonsMatrix.post(new Runnable() {
                 @Override
                 public void run() {
@@ -135,7 +138,7 @@ public abstract class Excercise extends Fragment {
                     }
                 }
             });
-        } else if (MainMenu.mode == MainMenu.ProgramMode.IMAGES){
+        } else if (MainMenu.mode == MainMenu.ProgramMode.IMAGES) {
             buttonsMatrix.post(new Runnable() {
                 @Override
                 public void run() {
@@ -151,15 +154,19 @@ public abstract class Excercise extends Fragment {
     void generateAndInsertRandomlyChosenSounds(int fieldAmount) {
         choices = generateRandomChoices(fieldAmount);
         generateACorrectAnswer(fieldAmount);
-        Log.i("CORRECT_ANSWER",soundNames[correctAnswer]);
+        Log.i("CORRECT_ANSWER", soundNames[correctAnswer]);
         for (int buttonCounter = 0; buttonCounter < fieldAmount; buttonCounter++) {
             int buttonId = getResources().getIdentifier("button_" + buttonCounter, "id", mainView.getContext().getPackageName());
             if (MainMenu.mode == MainMenu.ProgramMode.TEXT) {
                 ((Button) mainView.findViewById(buttonId)).setText(soundNames[choices[buttonCounter]]);
-            } else if (MainMenu.mode == MainMenu.ProgramMode.IMAGES){
+            } else if (MainMenu.mode == MainMenu.ProgramMode.IMAGES) {
                 ImageButton imageButton = ((ImageButton) mainView.findViewById(buttonId));
                 try {
-                    InputStream inputStream = mainView.getContext().getAssets().open("images_sounds/" + soundNames[choices[buttonCounter]] + ".jpg");
+                    InputStream inputStream = null;
+                    if (MainMenu.emode == MainMenu.ExcerciseMode.SOUND)
+                        inputStream = mainView.getContext().getAssets().open("images_sounds/" + soundNames[choices[buttonCounter]] + ".jpg");
+                    else if (MainMenu.emode == MainMenu.ExcerciseMode.SPEECH)
+                        inputStream = mainView.getContext().getAssets().open("images_speech/" + soundNames[choices[buttonCounter]] + ".jpg");
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
                     int targetWidth = imageButton.getWidth();
@@ -172,7 +179,7 @@ public abstract class Excercise extends Fragment {
 
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true);
                     imageButton.setImageBitmap(scaledBitmap);
-                    imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE); // Ustaw ScaleType na CENTER_INSIDE, aby zachować proporcje
+                    imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -181,25 +188,24 @@ public abstract class Excercise extends Fragment {
     }
 
     Integer[] generateRandomChoices(int fieldAmount) {
-        List<Integer> numbers = new ArrayList<>();
-        for (int i = 0; i < soundNames.length; i++) {
-            numbers.add(i);
-        }
-
         Collections.shuffle(numbers);
 
         return numbers.subList(0, fieldAmount).toArray(new Integer[fieldAmount]);
     }
 
+    void setListForRandomGenerator() {
+        numbers = new ArrayList<>();
+        for (int i = 0; i < soundNames.length; i++) {
+            numbers.add(i);
+        }
+    }
 
     void insertAParticularNumberOfButtonsIntoGridLayout(int m, int n) {
         buttonsMatrix = mainView.findViewById(R.id.buttonsMatrix);
         buttonsMatrix.setColumnCount(n);
         buttonsMatrix.setRowCount(m);
 
-        int buttonCounter = 0;
-
-        if(MainMenu.mode == MainMenu.ProgramMode.TEXT) {
+        if (MainMenu.mode == MainMenu.ProgramMode.TEXT) {
             for (int i = 0; i < m; i++) {
                 for (int j = 0; j < n; j++) {
                     Button button = new Button(mainView.getContext());
@@ -230,7 +236,7 @@ public abstract class Excercise extends Fragment {
                     generateAndInsertRandomlyChosenSounds(m * n);
                 }
             });
-        } else if (MainMenu.mode == MainMenu.ProgramMode.IMAGES){
+        } else if (MainMenu.mode == MainMenu.ProgramMode.IMAGES) {
             for (int i = 0; i < m; i++) {
                 for (int j = 0; j < n; j++) {
                     ImageButton button = new ImageButton(mainView.getContext());
@@ -265,17 +271,32 @@ public abstract class Excercise extends Fragment {
         }
 
     }
-    void initialization(){
-        ((ImageButton)mainView.findViewById(R.id.next)).performClick();
+
+    void initialization() {
+        ((ImageButton) mainView.findViewById(R.id.next)).performClick();
     }
+
     void setButtonsClickedBehaviour(int fieldAmount) {
         ((ImageButton) mainView.findViewById(R.id.play)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Animation animation = AnimationUtils.loadAnimation(mainView.getContext(), R.anim.button_pressed_animation);
                 ((ImageButton) mainView.findViewById(R.id.play)).startAnimation(animation);
-                if (MainMenu.mode != MainMenu.ProgramMode.INPUT) playSound("sounds/" + soundNames[choices[correctAnswer]] + ".ogg");
-                else playSound("sounds/" + soundNames[correctAnswer]+ ".ogg");
+                if (MainMenu.emode == MainMenu.ExcerciseMode.SOUND) {
+                    if (MainMenu.mode != MainMenu.ProgramMode.INPUT)
+                        playSound("sounds/" + soundNames[choices[correctAnswer]] + ".ogg");
+                    else playSound("sounds/" + soundNames[correctAnswer] + ".ogg");
+                } else if (MainMenu.emode == MainMenu.ExcerciseMode.SPEECH) {
+                    if (MainMenu.mode == MainMenu.ProgramMode.SPEECH_SYNTHESIZER) {
+                        EditText et = mainView.findViewById(R.id.inputTextFieldSynthesizer);
+                        String sound = et.getText().toString();
+                        playSound(sound);
+                    } else {
+                        if (MainMenu.mode != MainMenu.ProgramMode.INPUT)
+                            playSound(soundNames[choices[correctAnswer]]);
+                        else playSound(soundNames[correctAnswer]);
+                    }
+                }
             }
         });
         ((ImageButton) mainView.findViewById(R.id.stop)).setOnClickListener(new View.OnClickListener() {
@@ -295,17 +316,23 @@ public abstract class Excercise extends Fragment {
                 buttonsMatrix.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (MainMenu.mode != MainMenu.ProgramMode.INPUT){
-                        setDefaultColorsOfButtons();
-                        generateAndInsertRandomlyChosenSounds(m * n);
-                        deactivateAllButtons = false;
-                        messageSystem.pressAButtonToPlayASound();
+                        if (MainMenu.mode == MainMenu.ProgramMode.SPEECH_SYNTHESIZER) {
+                            stopSound();
+                            EditText et = mainView.findViewById(R.id.inputTextFieldSynthesizer);
+                            et.setText("");
                         } else {
-                            generateACorrectAnswer(soundNames.length);
-                            editText.setText("");
-                            messageSystem.pressAButtonAndInputText();
-                            lockPoints = false;
-                            Log.i("CORRECT_ANSWER",soundNames[correctAnswer]);
+                            if (MainMenu.mode != MainMenu.ProgramMode.INPUT) {
+                                setDefaultColorsOfButtons();
+                                generateAndInsertRandomlyChosenSounds(m * n);
+                                deactivateAllButtons = false;
+                                messageSystem.pressAButtonToPlayASound();
+                            } else {
+                                generateACorrectAnswer(soundNames.length);
+                                editText.setText("");
+                                messageSystem.pressAButtonAndInputText();
+                                lockPoints = false;
+                                Log.i("CORRECT_ANSWER", soundNames[correctAnswer]);
+                            }
                         }
 
                     }
@@ -378,7 +405,10 @@ public abstract class Excercise extends Fragment {
     boolean checkUserAnswer() {
         return userAnswer == correctAnswer;
     }
-    boolean checkUserAnswerString(String s) {return s.equals(soundNames[correctAnswer]); }
+
+    boolean checkUserAnswerString(String s) {
+        return s.equals(soundNames[correctAnswer]);
+    }
 
     void generateACorrectAnswer(int fieldAmount) {
         Random r = new Random();

@@ -28,8 +28,9 @@ public class Sound extends Excercise {
         mainView = inflater.inflate(R.layout.sound, container, false);
         this.assetManager = mainView.getContext().getAssets();
         currentInformations = mainView.findViewById(R.id.currentInformations);
-        messageSystem = new UserMessages(currentInformations);
+        messageSystem = new UserMessages(currentInformations, mainView.getContext());
         searchForSoundsAndGetSoundsNames();
+        setListForRandomGenerator();
         if (MainMenu.mode != MainMenu.ProgramMode.INPUT) {
             insertAParticularNumberOfButtonsIntoGridLayout(m, n);
             setButtonsClickedBehaviour(m * n);
