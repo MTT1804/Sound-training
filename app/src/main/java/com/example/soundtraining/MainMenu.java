@@ -16,6 +16,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -35,13 +36,15 @@ public class MainMenu extends Fragment {
     View mainView;
     NavigationView navigationView;
     static enum ProgramMode{
-        TEXT, IMAGES, INPUT, SPEECH_SYNTHESIZER
+        TEXT, IMAGES, INPUT, SPEECH_SYNTHESIZER, GUESS_FREQUENCY, FREQUENCY_GENERATOR, SIMILAR_WORDS
     }
     static enum ExcerciseMode{
         SOUND, SPEECH, FREQUENCY
     }
     static ProgramMode mode;
     static ExcerciseMode emode;
+    static boolean similarWordsModeOn;
+    static int whichDatabaseToUseInSimilarWordsModule; // 1 or 2
 
     public void loadAndSetBackgoundButtonsImages() {
         AssetManager manager = mainView.getContext().getAssets();
@@ -69,6 +72,18 @@ public class MainMenu extends Fragment {
             stream.close();
             ((Button) mainView.findViewById(R.id.button4)).setBackground(new BitmapDrawable(getResources(), bitmap));
             ((Button) mainView.findViewById(R.id.button4)).setText("Podobne słowa");
+
+            stream = manager.open("background/bg_stories.jpg");
+            bitmap = BitmapFactory.decodeStream(stream);
+            stream.close();
+            ((Button) mainView.findViewById(R.id.button6)).setBackground(new BitmapDrawable(getResources(), bitmap));
+            ((Button) mainView.findViewById(R.id.button6)).setText("Opowiadania");
+
+            stream = manager.open("background/bg_other.jpg");
+            bitmap = BitmapFactory.decodeStream(stream);
+            stream.close();
+            ((Button) mainView.findViewById(R.id.button5)).setBackground(new BitmapDrawable(getResources(), bitmap));
+            ((Button) mainView.findViewById(R.id.button5)).setText("Inne");
         } catch (IOException e) {
             Log.e("AssetError", "Error with opening the background image file");
         }
@@ -81,9 +96,11 @@ public class MainMenu extends Fragment {
         loadAndSetBackgoundButtonsImages();
         setBackPanel();
         setRightPanelButton();
+        similarWordsModeOn = false;
         mainView.findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                similarWordsModeOn = false;
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Wybierz ćwiczenie z listy");
                 builder.setItems(R.array.dzwiek, new DialogInterface.OnClickListener() {
@@ -172,6 +189,7 @@ public class MainMenu extends Fragment {
         mainView.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                similarWordsModeOn = false;
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Wybierz ćwiczenie z listy");
                 builder.setItems(R.array.mowa, new DialogInterface.OnClickListener() {
@@ -182,7 +200,7 @@ public class MainMenu extends Fragment {
                         FragmentTransaction ft;
                         switch (which) {
                             case 0:
-                                moduleSpeech = new Speech(2,1);
+                                moduleSpeech = new Speech(2,1,0);
                                 mode = ProgramMode.TEXT;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -192,7 +210,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 1:
-                                moduleSpeech = new Speech(2,2);
+                                moduleSpeech = new Speech(2,2,0);
                                 mode = ProgramMode.TEXT;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -202,7 +220,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 2:
-                                moduleSpeech = new Speech(3,3);
+                                moduleSpeech = new Speech(3,3,0);
                                 mode = ProgramMode.TEXT;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -212,7 +230,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 3:
-                                moduleSpeech = new Speech(2,1);
+                                moduleSpeech = new Speech(2,1,0);
                                 mode = ProgramMode.IMAGES;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -222,7 +240,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 4:
-                                moduleSpeech = new Speech(2,2);
+                                moduleSpeech = new Speech(2,2,0);
                                 mode = ProgramMode.IMAGES;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -232,7 +250,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 5:
-                                moduleSpeech = new Speech(3,3);
+                                moduleSpeech = new Speech(3,3,0);
                                 mode = ProgramMode.IMAGES;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -242,7 +260,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 6:
-                                moduleSpeech = new Speech(3,3);
+                                moduleSpeech = new Speech(3,3,0);
                                 mode = ProgramMode.INPUT;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -252,7 +270,7 @@ public class MainMenu extends Fragment {
                                 ft.commit();
                                 break;
                             case 7:
-                                moduleSpeech = new Speech(-1,-1);
+                                moduleSpeech = new Speech(-1,-1,0);
                                 mode = ProgramMode.SPEECH_SYNTHESIZER;
                                 emode = ExcerciseMode.SPEECH;
                                 fm = getActivity().getSupportFragmentManager();
@@ -267,28 +285,190 @@ public class MainMenu extends Fragment {
                 builder.create().show();
             }
         });
+        mainView.findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                similarWordsModeOn = false;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Wybierz ćwiczenie z listy");
+                builder.setItems(R.array.czestotliwosc, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Sound module;
+                        FragmentManager fm;
+                        FragmentTransaction ft;
+                        switch (which) {
+                            case 0:
+                                module = new Sound();
+                                mode = ProgramMode.GUESS_FREQUENCY;
+                                emode = ExcerciseMode.FREQUENCY;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 1:
+                                module = new Sound();
+                                mode = ProgramMode.FREQUENCY_GENERATOR  ;
+                                emode = ExcerciseMode.FREQUENCY;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                        }
+                    }
+                });
+                builder.create().show();
+            }
+        });
+        mainView.findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                similarWordsModeOn = true;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Wybierz ćwiczenie z listy");
+                builder.setItems(R.array.podobne_slowa, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Speech module;
+                        FragmentManager fm;
+                        FragmentTransaction ft;
+                        switch (which) {
+                            case 0:
+                                module = new Speech(2,1,3);
+                                whichDatabaseToUseInSimilarWordsModule = 1;
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 1:
+                                module = new Speech(2,2,3);
+                                whichDatabaseToUseInSimilarWordsModule = 1;
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 2:
+                                module = new Speech(2,1,4);
+                                whichDatabaseToUseInSimilarWordsModule = 2;
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 3:
+                                module = new Speech(2,2,4);
+                                whichDatabaseToUseInSimilarWordsModule = 2;
+                                mode = ProgramMode.TEXT;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, module);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                        }
+                    }
+                });
+                builder.create().show();
+            }
+        });
+        mainView.findViewById(R.id.button6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                similarWordsModeOn = false;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Wybierz ćwiczenie z listy");
+                builder.setItems(R.array.opowiadania, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Speech moduleSpeech;
+                        FragmentManager fm;
+                        FragmentTransaction ft;
+                        switch (which) {
+                            case 0:
+                                moduleSpeech = new Speech(2,1,2);
+                                mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 1:
+                                moduleSpeech = new Speech(2,2,2);
+                                mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                            case 2:
+                                moduleSpeech = new Speech(3,3,2);
+                                mode = ProgramMode.IMAGES;
+                                emode = ExcerciseMode.SPEECH;
+                                fm = getActivity().getSupportFragmentManager();
+                                ft = fm.beginTransaction();
+                                ft.replace(R.id.fragmentContainerView, moduleSpeech);
+                                ft.addToBackStack(null);
+                                ft.commit();
+                                break;
+                        }
+                    }
+                });
+                builder.create().show();
+
+            }
+        });
         return mainView;
     }
-    void setBackPanel(){
+    public void setBackPanel() {
         navigationView = mainView.findViewById(R.id.nav_view);
         navigationView.inflateMenu(R.menu.drawer_menu);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                // Obsługa wybranego elementu menu
-                switch (item.getItemId()) {
-                    /*case R.id.nav_item_1:
+                int itemID = item.getItemId();
+                switch (itemID) {
+                    case 2131296593:
+                        Fragment settingsFragment = new SettingsFragment();
+                        ((SettingsFragment)settingsFragment).setMainView(mainView);
+                        FragmentManager fragmentManager = ((AppCompatActivity) mainView.getContext()).getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.fragmentContainerView, settingsFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
                         break;
-                    case R.id.nav_item_2:
+                    case 2131296594:
+                        // Handle case 1000009
                         break;
-                    // Obsłuż inne opcje menu*/
+                    case 2131296595:
+                        // Handle case 1000010
+                        break;
                 }
                 return true;
             }
         });
     }
     void setRightPanelButton(){
-        Button openNavButton = mainView.findViewById(R.id.buttonRightPanel);
+        Button openNavButton = mainView.findViewById(R.id.button5);
         openNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

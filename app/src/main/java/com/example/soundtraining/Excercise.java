@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -15,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -49,10 +49,19 @@ public abstract class Excercise extends Fragment {
     EditText editText;
     boolean lockPoints = false;
     List<Integer> numbers;
+    SeekBar frequencyBar;
+    TextView frequencyText;
+    int correctFrequency;
+    int userFrequency;
+    int extra;
 
     abstract void playSound(String sound);
 
     abstract void stopSound();
+
+    abstract void playFrequencySound(int frequency);
+
+    abstract void stopFrequencySound();
 
     void addTextViewAndEditTextToGridLayout() {
         buttonsMatrix = mainView.findViewById(R.id.buttonsMatrix);
@@ -152,9 +161,9 @@ public abstract class Excercise extends Fragment {
     }
 
     void generateAndInsertRandomlyChosenSounds(int fieldAmount) {
-        choices = generateRandomChoices(fieldAmount);
+        if (!MainMenu.similarWordsModeOn) choices = generateRandomChoices(fieldAmount);
+        else choices = generateRandomChoicesSimilarWords(fieldAmount);
         generateACorrectAnswer(fieldAmount);
-        Log.i("CORRECT_ANSWER", soundNames[correctAnswer]);
         for (int buttonCounter = 0; buttonCounter < fieldAmount; buttonCounter++) {
             int buttonId = getResources().getIdentifier("button_" + buttonCounter, "id", mainView.getContext().getPackageName());
             if (MainMenu.mode == MainMenu.ProgramMode.TEXT) {
@@ -166,7 +175,8 @@ public abstract class Excercise extends Fragment {
                     if (MainMenu.emode == MainMenu.ExcerciseMode.SOUND)
                         inputStream = mainView.getContext().getAssets().open("images_sounds/" + soundNames[choices[buttonCounter]] + ".jpg");
                     else if (MainMenu.emode == MainMenu.ExcerciseMode.SPEECH)
-                        inputStream = mainView.getContext().getAssets().open("images_speech/" + soundNames[choices[buttonCounter]] + ".jpg");
+                        if(extra != 2) inputStream = mainView.getContext().getAssets().open("images_speech/" + soundNames[choices[buttonCounter]] + ".jpg");
+                        else inputStream = mainView.getContext().getAssets().open("images_stories/" + soundNames[choices[buttonCounter]] + ".jpg");
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
                     int targetWidth = imageButton.getWidth();
@@ -191,6 +201,11 @@ public abstract class Excercise extends Fragment {
         Collections.shuffle(numbers);
 
         return numbers.subList(0, fieldAmount).toArray(new Integer[fieldAmount]);
+    }
+    Integer[] generateRandomChoicesSimilarWords(int fieldAmount) {
+        int howManyGroups = soundNames.length / fieldAmount;
+        int whichGroupOfWordsWeUse = new Random().nextInt(howManyGroups);
+        return numbers.subList(whichGroupOfWordsWeUse*fieldAmount, whichGroupOfWordsWeUse*fieldAmount + fieldAmount).toArray(new Integer[fieldAmount]);
     }
 
     void setListForRandomGenerator() {
@@ -296,6 +311,11 @@ public abstract class Excercise extends Fragment {
                             playSound(soundNames[choices[correctAnswer]]);
                         else playSound(soundNames[correctAnswer]);
                     }
+                } else if (MainMenu.mode == MainMenu.ProgramMode.GUESS_FREQUENCY) {
+                    playFrequencySound(correctFrequency);
+                } else if (MainMenu.mode == MainMenu.ProgramMode.FREQUENCY_GENERATOR){
+                    stopFrequencySound();
+                    playFrequencySound(userFrequency);
                 }
             }
         });
@@ -304,7 +324,8 @@ public abstract class Excercise extends Fragment {
             public void onClick(View v) {
                 Animation animation = AnimationUtils.loadAnimation(mainView.getContext(), R.anim.button_pressed_animation);
                 ((ImageButton) mainView.findViewById(R.id.stop)).startAnimation(animation);
-                stopSound();
+                if (MainMenu.emode != MainMenu.ExcerciseMode.FREQUENCY) stopSound();
+                else stopFrequencySound();
             }
         });
         ((ImageButton) mainView.findViewById(R.id.next)).setOnClickListener(new View.OnClickListener() {
@@ -313,30 +334,36 @@ public abstract class Excercise extends Fragment {
                 Animation animation = AnimationUtils.loadAnimation(mainView.getContext(), R.anim.button_pressed_animation);
                 ((ImageButton) mainView.findViewById(R.id.next)).startAnimation(animation);
                 stopSound();
-                buttonsMatrix.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (MainMenu.mode == MainMenu.ProgramMode.SPEECH_SYNTHESIZER) {
-                            stopSound();
-                            EditText et = mainView.findViewById(R.id.inputTextFieldSynthesizer);
-                            et.setText("");
-                        } else {
-                            if (MainMenu.mode != MainMenu.ProgramMode.INPUT) {
-                                setDefaultColorsOfButtons();
-                                generateAndInsertRandomlyChosenSounds(m * n);
-                                deactivateAllButtons = false;
-                                messageSystem.pressAButtonToPlayASound();
+                if (MainMenu.emode != MainMenu.ExcerciseMode.FREQUENCY) {
+                    buttonsMatrix.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MainMenu.mode == MainMenu.ProgramMode.SPEECH_SYNTHESIZER) {
+                                stopSound();
+                                EditText et = mainView.findViewById(R.id.inputTextFieldSynthesizer);
+                                et.setText("");
                             } else {
-                                generateACorrectAnswer(soundNames.length);
-                                editText.setText("");
-                                messageSystem.pressAButtonAndInputText();
-                                lockPoints = false;
-                                Log.i("CORRECT_ANSWER", soundNames[correctAnswer]);
+                                if (MainMenu.mode != MainMenu.ProgramMode.INPUT) {
+                                    setDefaultColorsOfButtons();
+                                    generateAndInsertRandomlyChosenSounds(m * n);
+                                    deactivateAllButtons = false;
+                                    messageSystem.pressAButtonToPlayASound();
+                                } else {
+                                    generateACorrectAnswer(soundNames.length);
+                                    editText.setText("");
+                                    messageSystem.pressAButtonAndInputText();
+                                    lockPoints = false;
+                                }
                             }
-                        }
 
-                    }
-                });
+                        }
+                    });
+                } else {
+                    messageSystem.pressAButtonToPlayASoundAndSelectAFrequency();
+                    correctFrequency = Sound.generateCorrectFrequency();
+                    deactivateAllButtons = false;
+                    stopFrequencySound();
+                }
 
 
             }
@@ -398,6 +425,25 @@ public abstract class Excercise extends Fragment {
                     }
                 }
             });
+        } else if (MainMenu.emode == MainMenu.ExcerciseMode.FREQUENCY) {
+            ((Button) mainView.findViewById(R.id.checkSetFrequency)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!deactivateAllButtons) {
+                        for (int i = 0; i < 10; i++) {
+                            int difference = userFrequency - correctFrequency;
+                            if (Math.abs(difference) <= Math.round(Sound.FREQUENCY_LIMIT_TO_EARN_10_POINTS / (10 - i))) {
+                                messageSystem.youAreCloseToTheCorrectAnswer(10 - i, difference, correctFrequency);
+                                deactivateAllButtons = true;
+                                break;
+                            } else {
+                                messageSystem.youAreFarAwayFromCorrectAnswer(difference, correctFrequency);
+                                deactivateAllButtons = true;
+                            }
+                        }
+                    }
+                }
+            });
         }
 
     }
@@ -413,5 +459,33 @@ public abstract class Excercise extends Fragment {
     void generateACorrectAnswer(int fieldAmount) {
         Random r = new Random();
         correctAnswer = r.nextInt(fieldAmount);
+    }
+
+    void setAFrequencySlider() {
+        frequencyBar = mainView.findViewById(R.id.frequencyBar);
+        frequencyText = mainView.findViewById(R.id.frequencyText);
+        frequencyBar.setMax(7900);
+        frequencyBar.setProgress(0);
+        frequencyBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progress += Sound.LOWER_FREQ_LIMIT;
+                userFrequency = progress;
+                frequencyText.setText("Wybrana częstotliwość dźwięku: " + progress + "Hz");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
+
+    void removeUnnecesaryButtonsFromFrequencyModules(){
+        ((Button)mainView.findViewById(R.id.checkSetFrequency)).setVisibility(View.GONE);
+        ((ImageButton)mainView.findViewById(R.id.next)).setVisibility(View.GONE);
     }
 }

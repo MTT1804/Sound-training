@@ -19,4 +19,19 @@
         <item>Tryb wpisywanie</item>
         <item>Syntezator mowy</item>
     </array>
+    <array name="czestotliwosc">
+        <item>Zgadnij częstotliwość</item>
+        <item>Generator częstotliwości</item>
+    </array>
+    <array name="podobne_slowa">
+        <item>2x1 tryb tekstowy(baza słów 1)</item>
+        <item>2x2 tryb tekstowy(baza słów 1)</item>
+        <item>2x1 tryb tekstowy(baza słów 2)</item>
+        <item>2x2 tryb tekstowy(baza słów 2)</item>
+    </array>
+    <array name="opowiadania">
+        <item>2x1 tryb obrazkowy</item>
+        <item>2x2 tryb obrazkowy</item>
+        <item>3x3 tryb obrazkowy</item>
+    </array>
 </resources>

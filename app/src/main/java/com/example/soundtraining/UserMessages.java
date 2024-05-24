@@ -37,6 +37,9 @@ public class UserMessages {
     public void pressAButtonToPlayASound() {
         currentInformations.setText("Naciśnij zielony przycisk aby odtworzyć dźwięk. \nPunkty: " + points);
     }
+    public void pressAButtonToPlayASoundAndSelectAFrequency() {
+        currentInformations.setText("Naciśnij zielony przycisk aby odtworzyć dźwięk. Następnie wybierz częstotliwość dźwięku na pasku i kliknij na przycisk Sprawdź swoją odpowiedź. \nPunkty: " + points);
+    }
 
     public void soundPaused() {
         currentInformations.setText("Dźwięk został zatrzymany. Naciśnij zielony przycisk aby odtworzyć dźwięk. \nPunkty: " + points);
@@ -55,5 +58,16 @@ public class UserMessages {
     }
     public void pressAButtonAndProgramWillReadYourInput(){
         currentInformations.setText("Wpisz w pole tekstowe twój tekst który zostanie odczytany przez syntezator mowy po wciśnięciu zielonego przycisku.");
+    }
+    public void youAreCloseToTheCorrectAnswer(int score, int difference, int correct){
+        points += score;
+        currentInformations.setText("Jesteś blisko poprawnej odpowiedzi. Różnica pomiędzy poprawną odpowiedzią a Twoją: " + difference + "Hz. Prawidłowa odpowiedź: " + correct + " Hz. Otrzymujesz " + score + " punktów. \nPunkty: "+ points);
+    }
+    public void youAreFarAwayFromCorrectAnswer(int difference, int correct){
+        currentInformations.setText("Jesteś zbyt daleko od poprawnej odpowiedzi. Różnica pomiędzy poprawną odpowiedzią a Twoją: " + difference + "Hz. Prawidłowa odpowiedź: " + correct + " Hz. Otrzymujesz 0 punktów. \nPunkty: "+ points);
+    }
+
+    public void pressAButtonToPlayASoundAndSetAFrequencyUsingSlider() {
+        currentInformations.setText("Naciśnij zielony przycisk aby odtworzyć dźwięk. Ustaw suwakiem żądaną częstotliwość dźwięku. \nPunkty: " + points);
     }
 }

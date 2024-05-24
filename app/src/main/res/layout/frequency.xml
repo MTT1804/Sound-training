@@ -6,26 +6,47 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/moduleTitle"
+        android:id="@+id/moduleTitleFreq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Zgadnij dźwięk!"
+        android:text="Zgadnij częstotliwość dźwięku!"
         android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.gridlayout.widget.GridLayout
+    <LinearLayout
         android:id="@+id/buttonsMatrix"
         android:layout_width="691dp"
         android:layout_height="236dp"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/moduleTitleFreq">
 
-    </androidx.gridlayout.widget.GridLayout>
+        <SeekBar
+            android:id="@+id/frequencyBar"
+            android:layout_width="match_parent"
+            android:layout_height="134dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/frequencyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Wybrana częstotliwość dźwięku: 100 Hz"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/checkSetFrequency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sprawdź swoją odpowiedź" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/infoAndButtonBottomPanel"

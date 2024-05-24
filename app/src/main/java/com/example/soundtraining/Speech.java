@@ -23,10 +23,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class Speech extends Excercise {
-    public Speech(int m, int n) {
+    // extra info: 2 - use stories database, 0 - use default settings, 3 - similar words mode & use 1st database, 4 - similar words mode & use 2nd database
+    public Speech(int m, int n, int extra) {
         super(R.layout.sound);
         this.m = m;
         this.n = n;
+        this.extra = extra;
     }
     TextToSpeech textToSpeech;
     @Nullable
@@ -91,7 +93,12 @@ public class Speech extends Excercise {
         ArrayList<String>wordsDatabase = new ArrayList<>();
         int i = 0;
         try {
-            InputStreamReader inputStreamReader = new InputStreamReader(assetManager.open("text/words"));
+            InputStreamReader inputStreamReader = null;
+            if (!MainMenu.similarWordsModeOn) inputStreamReader = new InputStreamReader(assetManager.open("text/words"));
+            else {
+                if (MainMenu.whichDatabaseToUseInSimilarWordsModule == 1) inputStreamReader = new InputStreamReader(assetManager.open("text/similar_words1"));
+                else inputStreamReader = new InputStreamReader(assetManager.open("text/similar_words2"));
+            }
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line;
 
@@ -110,7 +117,8 @@ public class Speech extends Excercise {
     public void searchForImagesAndGetImagesNames(){
         AssetManager assetManager = mainView.getContext().getAssets();
         try {
-            soundNames = assetManager.list("images_speech");
+            if(extra != 2) soundNames = assetManager.list("images_speech");
+            else soundNames = assetManager.list("images_stories");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -134,7 +142,6 @@ public class Speech extends Excercise {
     protected void playSound(String sound){
         if (textToSpeech != null) {
             textToSpeech.speak(sound, TextToSpeech.QUEUE_FLUSH, null, null);
-            Log.i("JESTEMTU",sound);
         }
     }
     @Override
@@ -149,6 +156,13 @@ public class Speech extends Excercise {
         if (textToSpeech != null) {
             textToSpeech.shutdown();
         }
+    }
+    @Override
+    protected void playFrequencySound(int frequency) {
+    }
+
+    @Override
+    protected void stopFrequencySound() {
     }
 
 }
