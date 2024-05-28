@@ -446,21 +446,27 @@ public class MainMenu extends Fragment {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemID = item.getItemId();
+                FragmentManager fragmentManager = ((AppCompatActivity) mainView.getContext()).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 switch (itemID) {
                     case 2131296593:
                         Fragment settingsFragment = new SettingsFragment();
                         ((SettingsFragment)settingsFragment).setMainView(mainView);
-                        FragmentManager fragmentManager = ((AppCompatActivity) mainView.getContext()).getSupportFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.fragmentContainerView, settingsFragment);
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                         break;
                     case 2131296594:
-                        // Handle case 1000009
+                        Fragment textFragmentStats = new Stats();
+                        fragmentTransaction.replace(R.id.fragmentContainerView, textFragmentStats);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
                         break;
                     case 2131296595:
-                        // Handle case 1000010
+                        Fragment textFragmentInfo = new Info();
+                        fragmentTransaction.replace(R.id.fragmentContainerView, textFragmentInfo);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
                         break;
                 }
                 return true;

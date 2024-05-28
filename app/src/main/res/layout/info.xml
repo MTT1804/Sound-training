@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/infoText"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textInfoField"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce finibus consectetur posuere. Vestibulum volutpat dignissim dui quis aliquam. Donec sit amet porttitor ipsum. Quisque non metus vitae felis pulvinar accumsan quis sit amet nulla. Morbi interdum, sapien non dapibus mollis, tellus ligula lacinia nunc, vel rutrum velit purus et purus. Fusce porta nibh et neque rutrum, id blandit lorem ultricies. Duis vehicula vel dui sed porta. Suspendisse ornare sagittis vestibulum. Maecenas convallis sed dui a aliquet. Aliquam varius dictum ex sit amet dictum. Pellentesque dignissim auctor rutrum. Proin sem ante, bibendum ac arcu vel, tempus tincidunt ante. Nulla sagittis nisl arcu, ut pretium quam tempor efficitur.  Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent id consectetur neque, eget euismod mauris. Duis dictum mauris sit amet odio dignissim, et suscipit mi ultrices. Praesent scelerisque ut metus at congue. Morbi vel purus odio. Vivamus aliquam elit a tortor varius vestibulum. Praesent pharetra orci eget est tincidunt iaculis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus dapibus nisl vitae erat vehicula accumsan."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.491" />
+</androidx.constraintlayout.widget.ConstraintLayout>

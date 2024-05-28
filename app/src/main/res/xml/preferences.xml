@@ -6,10 +6,20 @@
             android:title="Ustaw tło na ciemne"
             android:summary="Włączenie tej opcji ustawia ciemne tło na obszarze całej aplikacji"
             android:defaultValue="false" />
+        <SwitchPreferenceCompat
+            android:key="single_channel"
+            android:title="Włącz jeden kanał dźwięku"
+            android:summary="Włączenie tej opcji ustawia jeden kanał dźwięku."
+            android:defaultValue="false" />
         <EditTextPreference
-            android:key="example_text"
-            android:title="Example Text"
-            android:summary="An example text preference"
-            android:defaultValue="Default value" />
+            android:key="UPPER_FREQ"
+            android:title="Górna granica generowania częstotliwości"
+            android:summary="Górna granica generowania częstotliwości"
+            android:defaultValue="8000" />
+        <EditTextPreference
+            android:key="LOWER_FREQ"
+            android:title="Dolna granica generowania częstotliwości"
+            android:summary="Dolna granica generowania częstotliwości"
+            android:defaultValue="100" />
     </PreferenceCategory>
 </PreferenceScreen>
