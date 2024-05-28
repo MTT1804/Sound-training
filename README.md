@@ -1,4 +1,4 @@
-Aplikacja do treningu słuchu wersja 0.9. Obecnie w budowie
+Aplikacja do treningu słuchu wersja 0.9. Obecnie w budowie \n
 Wersja językowa polska
 Przeznaczona na system operacyjny Android o wersji 10 i nowszej.
 ![image](https://github.com/MTT1804/Sound-training/assets/162719500/59c0084a-59eb-4f36-9d38-83a4d648ee00)
